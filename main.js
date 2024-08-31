@@ -1,16 +1,24 @@
-import { Canvas } from "https://deno.land/x/sdl2@0.1-alpha.6/src/canvas.ts";
+import {
+  EventType,
+  Rect,
+  Surface,
+  WindowBuilder,
+} from "jsr:@divy/sdl2@0.12.0";
+import image from "./assets/image.js";
+import { decodeBase64 } from "jsr:@std/encoding/base64";
 
-const canvas = new Canvas({
-  title: "Flappy Bird in Deno 🦕",
-  height: 400,
-  width: 800,
-  centered: true,
-  fullscreen: false,
-  hidden: false,
-  resizable: false,
-  minimized: false,
-  maximized: false,
-});
+const window = new WindowBuilder(
+  "Flappy Bird in Deno 🦕",
+  400,
+  800,
+)
+  .build();
+
+const canvas = window.canvas();
+
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
 
 // Create a class Entity
 class Entity {
@@ -22,10 +30,19 @@ class Entity {
   }
 }
 
-const birdSurfaceGameOver = canvas.loadSurface(
-  "sprites/yellowbird-gameover.png",
+function fromAsset(key) {
+  const img = image[key];
+  if (!img) {
+    throw new Error(`Image with key ${key} not found`);
+  }
+  return decodeBase64(img);
+}
+
+const textureCreator = canvas.textureCreator();
+const birdSurfaceGameOver = Surface.fromRaw(
+  fromAsset("yellowbird-gameover"),
 );
-const birdTextureGameOver = canvas.createTextureFromSurface(
+const birdTextureGameOver = textureCreator.createTextureFromSurface(
   birdSurfaceGameOver,
 );
 // Use class Entity and make class Player
@@ -34,24 +51,24 @@ class Player extends Entity {
   constructor() {
     super(170, 100, 34, 24);
 
-    const birdSurfaceMidflap = canvas.loadSurface(
-      "sprites/yellowbird-midflap.png",
+    const birdSurfaceMidflap = Surface.fromRaw(
+      fromAsset("yellowbird-midflap"),
     );
-    const birdTextureMidflap = canvas.createTextureFromSurface(
+    const birdTextureMidflap = textureCreator.createTextureFromSurface(
       birdSurfaceMidflap,
     );
 
-    const birdSurfaceUpflap = canvas.loadSurface(
-      "sprites/yellowbird-upflap.png",
+    const birdSurfaceUpflap = Surface.fromRaw(
+      fromAsset("yellowbird-upflap"),
     );
-    const birdTextureUpflap = canvas.createTextureFromSurface(
+    const birdTextureUpflap = textureCreator.createTextureFromSurface(
       birdSurfaceUpflap,
     );
 
-    const birdSurfaceDownflap = canvas.loadSurface(
-      "sprites/yellowbird-downflap.png",
+    const birdSurfaceDownflap = Surface.fromRaw(
+      fromAsset("yellowbird-downflap"),
     );
-    const birdTextureDownflap = canvas.createTextureFromSurface(
+    const birdTextureDownflap = textureCreator.createTextureFromSurface(
       birdSurfaceDownflap,
     );
 
@@ -68,17 +85,21 @@ class Player extends Entity {
     const texture = this.dead
       ? birdTextureGameOver
       : this.textures[this.animationCycle];
-    canvas.copy(texture, {
-      x: 0,
-      y: 0,
-      width: this.dead ? 34 : this.width,
-      height: this.dead ? 41 : this.height,
-    }, {
-      x: this.x,
-      y: this.y,
-      width: this.dead ? 34 : this.width,
-      height: this.dead ? 41 : this.height,
-    });
+    canvas.copy(
+      texture,
+      new Rect(
+        0,
+        0,
+        this.dead ? 34 : this.width,
+        this.dead ? 41 : this.height,
+      ),
+      new Rect(
+        this.x,
+        this.y,
+        this.dead ? 34 : this.width,
+        this.dead ? 41 : this.height,
+      ),
+    );
 
     // Wing animation
     this.animationCycle += 1;
@@ -93,7 +114,7 @@ class Player extends Entity {
   }
 }
 
-canvas.setCursor("sprites/cursor.png");
+//canvas.setCursor("sprites/cursor.png");
 
 function checkCollision(
   x1,
@@ -108,11 +129,10 @@ function checkCollision(
   return !(x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2);
 }
 
-const font = canvas.loadFont(
-  "./fonts/mainfont.ttf",
-  128,
-  { style: "normal" },
-);
+//const font = canvas.loadFont(
+//  "assets/mainfont.ttf",
+//  128,
+//);
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -135,23 +155,26 @@ const PIPE_WIDTH = 52;
 const PIPE_DISTANCE = 100;
 const GAP = 130;
 
-const bgScreenSurface = canvas.loadSurface("sprites/background.png");
-const bgScreenTexture = canvas.createTextureFromSurface(bgScreenSurface);
+const bgScreenSurface = Surface.fromRaw(fromAsset("background"));
+const bgScreenTexture = textureCreator.createTextureFromSurface(
+  bgScreenSurface,
+);
 
-const startSurface = canvas.loadSurface("sprites/start.png");
-const startTexture = canvas.createTextureFromSurface(startSurface);
+const startSurface = Surface.fromRaw(fromAsset("start"));
+const startTexture = textureCreator.createTextureFromSurface(startSurface);
 
-const pipeSurfaceUp = canvas.loadSurface("sprites/pipe-up.png");
-const pipeTextureUp = canvas.createTextureFromSurface(pipeSurfaceUp);
+const pipeSurfaceUp = Surface.fromRaw(fromAsset("pipe-up"));
+const pipeTextureUp = textureCreator.createTextureFromSurface(pipeSurfaceUp);
 
-const pipeSurfaceDown = canvas.loadSurface("sprites/pipe-down.png");
-const pipeTextureDown = canvas.createTextureFromSurface(pipeSurfaceDown);
+const pipeSurfaceDown = Surface.fromRaw(fromAsset("pipe-down"));
+const pipeTextureDown = textureCreator.createTextureFromSurface(
+  pipeSurfaceDown,
+);
 
 const bird = new Player();
 
 let gameOver = false;
 let intro = true;
-
 
 for (let i = 1; i < 6; i++) {
   const height = getRandomInt(100, 300);
@@ -166,34 +189,38 @@ for (let i = 1; i < 6; i++) {
 }
 canvas.clear();
 
-canvas.copy(bgScreenTexture, { x: 0, y: 0, width: 400, height: 800 }, {
-  x: 0,
-  y: 0,
-  width: 400,
-  height: 800,
-});
-canvas.copy(startTexture, { x: 0, y: 0, width: 400, height: 800 }, {
-  x: 100,
-  y: 230,
-  width: 210,
-  height: 300,
-});
+const wholeRect = new Rect(0, 0, 400, 800);
+canvas.copy(bgScreenTexture, wholeRect, wholeRect);
+canvas.copy(
+  startTexture,
+  wholeRect,
+  new Rect(
+    100,
+    230,
+    210,
+    300,
+  ),
+);
 
 canvas.present();
 
-for await (const event of canvas) {
+for await (const event of window.events()) {
   switch (event.type) {
-    case "draw":
+    case EventType.Draw:
       if (intro) {
         break;
       }
 
-      canvas.copy(bgScreenTexture, { x: 0, y: 0, width: 400, height: 800 }, {
-        x: 0,
-        y: 0,
-        width: 400,
-        height: 800,
-      });
+      canvas.copy(
+        bgScreenTexture,
+        new Rect(0, 0, 400, 800),
+        new Rect(
+          0,
+          0,
+          400,
+          800,
+        ),
+      );
 
       for (let idx = 0; idx < upperPipes.length; idx++) {
         if (
@@ -221,9 +248,9 @@ for await (const event of canvas) {
           // Only runs once
           if (!gameOver) {
             gameOver = true;
-            canvas.playMusic(
-              "./audio/game_over.wav",
-            );
+            //           canvas.playMusic(
+            //             "./audio/game_over.wav",
+            //           );
             canvas.present();
           }
         }
@@ -241,9 +268,9 @@ for await (const event of canvas) {
         ) {
           score_value += 1;
           const score_effects = ["scored_1.wav", "scored_2.wav"];
-          canvas.playMusic(
-            "./audio/" + score_effects[Math.floor(Math.random() * 2)],
-          );
+          //         canvas.playMusic(
+          //           "./audio/" + score_effects[Math.floor(Math.random() * 2)],
+          //         );
         }
 
         // Debug:
@@ -251,18 +278,26 @@ for await (const event of canvas) {
         // canvas.fillRect(upperPipes[idx].x + PIPE_WIDTH / 2, upperPipes[idx].height, 0, 800 - upperPipes[idx].height - lowerPipes[idx].height);
 
         // Pipes
-        canvas.copy(pipeTextureDown, { x: 0, y: 0, width: 52, height: 320 }, {
-          x: upperPipes[idx].x,
-          y: UPPER_PIPE_Y,
-          width: PIPE_WIDTH,
-          height: upperPipes[idx].height,
-        });
-        canvas.copy(pipeTextureUp, { x: 0, y: 0, width: 52, height: 320 }, {
-          x: lowerPipes[idx].x,
-          y: LOWER_PIPE_Y_BASE - lowerPipes[idx].height,
-          width: PIPE_WIDTH,
-          height: lowerPipes[idx].height,
-        });
+        canvas.copy(
+          pipeTextureDown,
+          new Rect(0, 0, 52, 320),
+          new Rect(
+            upperPipes[idx].x,
+            UPPER_PIPE_Y,
+            PIPE_WIDTH,
+            upperPipes[idx].height,
+          ),
+        );
+        canvas.copy(
+          pipeTextureUp,
+          new Rect(0, 0, 52, 320),
+          new Rect(
+            lowerPipes[idx].x,
+            LOWER_PIPE_Y_BASE - lowerPipes[idx].height,
+            PIPE_WIDTH,
+            lowerPipes[idx].height,
+          ),
+        );
         if (!gameOver) {
           bird.render();
 
@@ -287,13 +322,18 @@ for await (const event of canvas) {
           bird.render();
         }
       }
-
-      canvas.renderFont(font, score_value.toString(), {
-        blended: { color: { r: 255, g: 255, b: 255, a: 255 } },
-      }, {
-        x: 10,
-        y: -20,
-      });
+      //      const fontRender = font.renderBlended(
+      //        score_value.toString(),
+      //        new Color(255, 255, 255, 255),
+      //        10,
+      //        10,
+      //      );
+      //      const fontTexture = textureCreator.createTextureFromSurface(fontRender);
+      //      canvas.copy(
+      //        fontTexture,
+      //        new Rect(0, 0, fontRender.width, fontRender.height),
+      //        new Rect(10, 10, fontRender.width, fontRender.height),
+      //      );
 
       // Game physics
       if (is_space) {
@@ -307,12 +347,12 @@ for await (const event of canvas) {
         bird.y = 800 - 50;
       }
       canvas.present();
-      Deno.sleepSync(fps);
+      sleepSync(fps);
       break;
-    case "quit":
-      canvas.quit();
+    case EventType.Quit:
+      Deno.exit();
       break;
-    case "key_down":
+    case EventType.KeyDown:
       // Space
       if (event.keycode == 32 && !gameOver) {
         intro = false;
@@ -323,7 +363,7 @@ for await (const event of canvas) {
         gameOver = false;
       }
       break;
-    case "mouse_button_down":
+    case EventType.MouseButtonDown:
       if (event.button == 1 && !gameOver) {
         // Left click
         intro = false;
