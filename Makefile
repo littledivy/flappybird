@@ -12,7 +12,7 @@ flappybird: assets/image.js
 	deno compile --unstable-ffi -o flappybird -A main.js
 
 flappybird.exe: assets/image.js
-	deno compile --unstable-ffi --target x86_64-pc-windows-msvc --no-terminal -o flappybird.exe --icon assets/icon.ico -A main.js
+	deno compile --unstable-ffi --target x86_64-pc-windows-msvc -o flappybird.exe --icon assets/icon.ico -A main.js
 
 flappybird_win64.zip: flappybird.exe
 	curl -L https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.1/SDL2_image-2.8.1-win32-x64.zip -o SDL2_image-2.8.1-win32-x64.zip
