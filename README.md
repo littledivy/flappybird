@@ -6,4 +6,3 @@ $ make all
 
 $ ./flappybird
 ```
-

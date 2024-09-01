@@ -1,9 +1,4 @@
-import {
-  EventType,
-  Rect,
-  Surface,
-  WindowBuilder,
-} from "jsr:@divy/sdl2@0.12.0";
+import { EventType, Rect, Surface, WindowBuilder } from "jsr:@divy/sdl2@0.12.0";
 import image from "./assets/image.js";
 import { decodeBase64 } from "jsr:@std/encoding/base64";
 
@@ -128,11 +123,6 @@ function checkCollision(
 ) {
   return !(x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2);
 }
-
-//const font = canvas.loadFont(
-//  "assets/mainfont.ttf",
-//  128,
-//);
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -322,19 +312,6 @@ for await (const event of window.events()) {
           bird.render();
         }
       }
-      //      const fontRender = font.renderBlended(
-      //        score_value.toString(),
-      //        new Color(255, 255, 255, 255),
-      //        10,
-      //        10,
-      //      );
-      //      const fontTexture = textureCreator.createTextureFromSurface(fontRender);
-      //      canvas.copy(
-      //        fontTexture,
-      //        new Rect(0, 0, fontRender.width, fontRender.height),
-      //        new Rect(10, 10, fontRender.width, fontRender.height),
-      //      );
-
       // Game physics
       if (is_space) {
         bird.y -= 50;
