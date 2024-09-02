@@ -1,3 +1,10 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 nightlyistaken
+ * Copyright (c) 2024 littledivy
+ */
+
 import { EventType, Rect, Surface, WindowBuilder } from "jsr:@divy/sdl2@0.12.0";
 import image from "./assets/image.js";
 import { decodeBase64 } from "jsr:@std/encoding/base64";
@@ -15,7 +22,6 @@ function sleepSync(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 }
 
-// Create a class Entity
 class Entity {
   constructor(x, y, width, height) {
     this.x = x;
@@ -40,7 +46,7 @@ const birdSurfaceGameOver = Surface.fromRaw(
 const birdTextureGameOver = textureCreator.createTextureFromSurface(
   birdSurfaceGameOver,
 );
-// Use class Entity and make class Player
+
 class Player extends Entity {
   dead = false;
   constructor() {
