@@ -85,7 +85,7 @@ class Player extends Entity {
   render() {
     const texture = this.dead
       ? birdTextureGameOver
-      : this.textures[this.animationCycle];
+      : this.textures[Math.floor(this.animationCycle / 100) % 3];
     canvas.copy(
       texture,
       new Rect(
@@ -104,7 +104,7 @@ class Player extends Entity {
 
     // Wing animation
     this.animationCycle += 1;
-    if (this.animationCycle >= 3) {
+    if (this.animationCycle >= 200) {
       this.animationCycle = 0;
     }
   }
@@ -140,7 +140,7 @@ let is_space = false;
 let score_value = 0;
 
 const gravity = 1;
-const fps = 9;
+const fps = 10;
 
 const upperPipes = [];
 const lowerPipes = [];
@@ -244,9 +244,6 @@ for await (const event of window.events()) {
           // Only runs once
           if (!gameOver) {
             gameOver = true;
-            //           canvas.playMusic(
-            //             "./audio/game_over.wav",
-            //           );
             canvas.present();
           }
         }
@@ -263,10 +260,6 @@ for await (const event of window.events()) {
           )
         ) {
           score_value += 1;
-          const score_effects = ["scored_1.wav", "scored_2.wav"];
-          //         canvas.playMusic(
-          //           "./audio/" + score_effects[Math.floor(Math.random() * 2)],
-          //         );
         }
 
         // Debug:
@@ -308,10 +301,6 @@ for await (const event of window.events()) {
 
           if (bird.y >= 800 - 50) {
             gameOver = true;
-
-            canvas.playMusic(
-              "./audio/game_over.wav",
-            );
           }
         } else {
           bird.die();
