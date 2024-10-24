@@ -15,7 +15,7 @@ assets/image.js: $(wildcard assets/*.png)
 	@echo "};" >> $@
 
 flappybird: assets/image.js
-	deno compile --unstable-ffi -o flappybird -A main.js
+	deno compile --unstable-ffi --env -o flappybird -A main.js
 
 flappybird.exe: assets/image.js
 	deno compile --unstable-ffi --target x86_64-pc-windows-msvc -o flappybird.exe --icon assets/icon.ico -A main.js

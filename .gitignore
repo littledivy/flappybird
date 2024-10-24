@@ -2,3 +2,5 @@ flappybird
 flappybird.exe
 *.dll
 *.zip
+.env
+.DS_Store
