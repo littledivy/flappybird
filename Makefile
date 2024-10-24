@@ -1,10 +1,16 @@
 all: assets/image.js flappybird
 
+ifeq ($(shell uname),Darwin)
+BASE64 = base64 -i
+else
+BASE64 = base64 -w 0
+endif
+
 assets/image.js: $(wildcard assets/*.png)
 	@echo "export default {" > $@
 	@for file in $^; do \
 		name=$$(basename $$file .png); \
-		echo "  '$$name': '$$(base64 -w 0 $$file)'," >> $@; \
+		echo "  '$$name': '$$($(BASE64) $$file)'," >> $@; \
 	done
 	@echo "};" >> $@
 
