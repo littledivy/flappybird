@@ -6,3 +6,19 @@ $ make all
 
 $ ./flappybird
 ```
+
+## Installation
+
+If you're on macOS, you'll have to install the following dependencies:
+
+```sh
+brew install sdl2 sdl2_image sdl2_ttf
+```
+
+Then, add an `.env` file with the following path:
+
+```sh
+DENO_SDL2_PATH=/opt/homebrew/lib/
+```
+
+You should be able to compile and run Flappybird.
