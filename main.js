@@ -326,11 +326,11 @@ for await (const event of window.events()) {
       break;
     case EventType.KeyDown:
       // Space
-      if (event.keycode == 32 && !gameOver) {
+      if (event.keysym.scancode == 44 && !gameOver) {
         intro = false;
         is_space = true;
       }
-      if (event.keycode == 114 && gameOver) {
+      if (event.keysym.scancode == 21 && gameOver) {
         intro = true;
         gameOver = false;
       }
