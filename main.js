@@ -6,8 +6,7 @@
  */
 
 import { EventType, Rect, Surface, WindowBuilder } from "jsr:@divy/sdl2@0.12.0";
-import image from "./assets/image.js";
-import { decodeBase64 } from "jsr:@std/encoding/base64";
+import * as assets from "./assets/images_v2.js";
 
 const window = new WindowBuilder(
   "Flappy Bird in Deno 🦕",
@@ -31,17 +30,9 @@ class Entity {
   }
 }
 
-function fromAsset(key) {
-  const img = image[key];
-  if (!img) {
-    throw new Error(`Image with key ${key} not found`);
-  }
-  return decodeBase64(img);
-}
-
 const textureCreator = canvas.textureCreator();
 const birdSurfaceGameOver = Surface.fromRaw(
-  fromAsset("yellowbird-gameover"),
+  assets.yellowbirdGameover,
 );
 const birdTextureGameOver = textureCreator.createTextureFromSurface(
   birdSurfaceGameOver,
@@ -53,21 +44,21 @@ class Player extends Entity {
     super(170, 100, 34, 24);
 
     const birdSurfaceMidflap = Surface.fromRaw(
-      fromAsset("yellowbird-midflap"),
+      assets.yellowbirdMidflap,
     );
     const birdTextureMidflap = textureCreator.createTextureFromSurface(
       birdSurfaceMidflap,
     );
 
     const birdSurfaceUpflap = Surface.fromRaw(
-      fromAsset("yellowbird-upflap"),
+      assets.yellowbirdUpflap,
     );
     const birdTextureUpflap = textureCreator.createTextureFromSurface(
       birdSurfaceUpflap,
     );
 
     const birdSurfaceDownflap = Surface.fromRaw(
-      fromAsset("yellowbird-downflap"),
+      assets.yellowbirdDownflap,
     );
     const birdTextureDownflap = textureCreator.createTextureFromSurface(
       birdSurfaceDownflap,
@@ -151,18 +142,18 @@ const PIPE_WIDTH = 52;
 const PIPE_DISTANCE = 100;
 const GAP = 130;
 
-const bgScreenSurface = Surface.fromRaw(fromAsset("background"));
+const bgScreenSurface = Surface.fromRaw(assets.background);
 const bgScreenTexture = textureCreator.createTextureFromSurface(
   bgScreenSurface,
 );
 
-const startSurface = Surface.fromRaw(fromAsset("start"));
+const startSurface = Surface.fromRaw(assets.start);
 const startTexture = textureCreator.createTextureFromSurface(startSurface);
 
-const pipeSurfaceUp = Surface.fromRaw(fromAsset("pipe-up"));
+const pipeSurfaceUp = Surface.fromRaw(assets.pipeUp);
 const pipeTextureUp = textureCreator.createTextureFromSurface(pipeSurfaceUp);
 
-const pipeSurfaceDown = Surface.fromRaw(fromAsset("pipe-down"));
+const pipeSurfaceDown = Surface.fromRaw(assets.pipeDown);
 const pipeTextureDown = textureCreator.createTextureFromSurface(
   pipeSurfaceDown,
 );
